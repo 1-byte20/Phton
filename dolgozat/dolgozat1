@@ -1,0 +1,36 @@
+import flet as ft
+
+def main(page: ft.Page):
+    page.title='Dolgozat'
+
+    page.add(ft.Row(controls=[
+        ft.Text(value="Hello ",text_align=ft.TextAlign.LEFT ),
+        ft.Text(value="World!",text_align=ft.TextAlign.RIGHT )
+        ])
+   
+    )
+    page.update()
+
+    page.add(
+        ft.Container(
+            content=ft.Text("A", text_align='center'),
+            height=200,
+            width=max,
+            bgcolor='lightblue',
+            alignment=ft.alignment.center
+            ))
+    
+    page.add(ft.Row( controls=[
+        ft.Container(width=200, height=200, bgcolor='yellow'),
+        ft.Container(width=200, height=200, bgcolor='blue'),
+        ft.Container(width=200, height=200, bgcolor='green'),
+        ft.Container(width=200, height=200, bgcolor='black'),
+        ft.Container(width=200, height=200, bgcolor='red'),
+    ])
+    )
+    page.scroll = ft.ScrollMode.AUTO
+    
+    page.update()
+
+if __name__ =='__main__':
+    ft.app(target=main)
