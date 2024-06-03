@@ -1,0 +1,134 @@
+import flet as ft
+import random
+
+# Kérdések és válaszok
+questions = [
+    {
+        "question": "Mi a fővárosa Magyarországnak?",
+        "type": "single",
+        "options": ["Budapest", "Bécs", "Prága", "Varsó"],
+        "correct": ["Budapest"]
+    },
+    {
+        "question": "Melyik évben kezdődött az első világháború?",
+        "type": "single",
+        "options": ["1914", "1918", "1939", "1945"],
+        "correct": ["1914"]
+    },
+    {
+        "question": "Jelölje meg a programozási nyelveket!",
+        "type": "multi",
+        "options": ["Python", "Java", "HTML", "C++"],
+        "correct": ["Python", "Java", "C++"]
+    },
+    {
+        "question": "Melyik nap lenne holnap, ha tegnap 5 nappal szerdát követő nap előtt voltunk?",
+        "type": "single",
+        "options": ["Vasárnap", "Hétfő", "Kedd"],
+        "correct": ["Kedd"]
+    },
+    {
+        "question": "Ha két indián két perc alatt két nyilat lő ki, akkor tíz indián tíz perc alatt hány nyilat lő ki?",
+        "type": "single",
+        "options": ["10", "50", "100"],
+        "correct": ["50"]
+    },
+    {
+        "question": "András magasabb, mint Béci, és Béci alacsonyabb, mint Cili. Hogy viszonyul A magassága C-hez?",
+        "type": "single",
+        "options": ["Cili magasabb mint András", "Nem lehet tudni", "Egyforma magasak"],
+        "correct": ["Nem lehet tudni"]
+    },
+    {
+        "question": "Mennyi egy meg egy?",
+        "type": "single",
+        "options": ["3", "4", "2", "1"],
+        "correct": ["2"]
+    },
+    {
+        "question": "Mi az, ami nedvesebb lesz minél többet szárít?",
+        "type": "multi",
+        "options": [ "Kreppelő", "Hajszárító", "Törülköző"],
+        "correct": ["Törülköző"]
+    },
+    {
+        "question": "Ezek a számok közül melyek prím számok?",
+        "type": "multi",
+        "options": ["9", "23", "47", "99", "7"],
+        "correct": ["7", "47", "23"]
+    },
+    # Adj hozzá további kérdéseket hasonló formátumban
+]
+
+random.shuffle(questions)  # Véletlenszerű sorrend a kérdéseknek
+
+def main(page: ft.Page):
+    page.title = "Kérdőív"
+    page.window_width = 600
+    page.window_height = 800
+
+    score = 0
+    current_question = 0
+    answers = []
+
+    def show_question():
+        if current_question < len(questions):
+            q = questions[current_question]
+            question_label.value = q["question"]
+            answer_options.controls.clear()
+
+            shuffled_options = q["options"].copy()
+            random.shuffle(shuffled_options)
+
+            if q["type"] == "single":
+                for option in shuffled_options:
+                    answer_options.controls.append(
+                        ft.Radio(value=option, label=option, group="answers")
+                    )
+            elif q["type"] == "multi":
+                for option in shuffled_options:
+                    answer_options.controls.append(
+                        ft.Checkbox(label=option, value=False)
+                    )
+
+            page.update()
+        else:
+            evaluate()
+
+    def next_question(e):
+        nonlocal current_question, score
+        q = questions[current_question]
+        selected_answers = []
+
+        if q["type"] == "single":
+            for control in answer_options.controls:
+                if isinstance(control, ft.Radio) and control.group == "answers" and control.value:
+                    selected_answers.append(control.value)
+        elif q["type"] == "multi":
+            for control in answer_options.controls:
+                if isinstance(control, ft.Checkbox) and control.value:
+                    selected_answers.append(control.label)
+
+        if sorted(selected_answers) == sorted(q["correct"]):
+            score += 1
+
+        current_question += 1
+        show_question()
+
+    def evaluate():
+        question_label.value = f"Kérdőív vége! Az eredményed: {score}/{len(questions)}"
+        answer_options.controls.clear()
+        page.update()
+
+    question_label = ft.Text()
+    answer_options = ft.Column()
+
+    next_button = ft.ElevatedButton(text="Következő", on_click=next_question)
+
+    page.add(question_label)
+    page.add(answer_options)
+    page.add(next_button)
+
+    show_question()
+
+ft.app(target=main)
